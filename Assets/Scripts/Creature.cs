@@ -3,15 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class Creature  {
+public class Creature : MonoBehaviour
+{
 
    private int level;
    private double coinsPerSec;
+   private Vector2 position;
 
-    Creature (int level)
+    public Creature (int level, Vector2 position, GameObject creature)
     {
         this.level = level;
-        coinsPerSec=fixCoins();
+        this.position = position;
+        GameObject newCreature = Instantiate(creature, this.position, Quaternion.identity) as GameObject;
+        coinsPerSec =fixCoins();
     }
 
     double fixCoins()

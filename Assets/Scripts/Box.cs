@@ -2,17 +2,25 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Box  {
-    int randomRange;
-
-    Box(int range)
+public class Box : MonoBehaviour
+{
+    public Vector2 position;
+    GameObject creature;
+    int creatureLevel;
+     public Box(int creatureLevel, GameObject creature, GameObject box, Vector2 position)
     {
-        this.randomRange = range;
+        this.creatureLevel = creatureLevel;
+        this.creature = creature;
+        this.position = position;
+        GameObject newBox = Instantiate(box, this.position, Quaternion.identity) as GameObject;
+        
     }
 
-    int openBox()
+    public Creature openBox()
     {
-        return Random.Range(0, randomRange);
+        return new Creature(creatureLevel, position, creature);
     }
+
+
 
 }
