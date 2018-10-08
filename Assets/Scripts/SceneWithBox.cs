@@ -12,82 +12,110 @@ public class SceneWithBox : MonoBehaviour {
     public GameObject fifth;
     private bool check;
 
-    public static Object[,] creaturesOnBoard = new Object[6, 6];
-   
+    public static Object[] creaturesOnBoard = new Object[5];
+    public static List<int> mergeLst = new List<int>();
     int boxLevel;
-
     private IEnumerator boxDeliver;
 
-    IEnumerator Deliver()
-    {
-        while (true)
-        {
-            
-            creaturesOnBoard[0, 0] = new Box(boxLevel, creatureByLevel(boxLevel), box, randomPosition());
-            yield return new WaitForSeconds(20);
-        }
-    }
-
-    // Use this for initialization
     void Start()
     {
-        //if (PlayerPrefs.HasKey("boxLevel"))
-        // boxLevel = PlayerPrefs.GetInt("boxLevel");
-        // else 
-        boxLevel = 0;
-        
+        boxLevel = 1;
         boxDeliver = Deliver();
         check = true;
         StartCoroutine(boxDeliver);
-    }
-
-        
+    }        
 	
-	// Update is called once per frame
 	void Update ()
     {
         if (Input.GetMouseButtonDown(0))
         {
             Vector2 clickWorldPos
                 = Camera.main.ScreenToWorldPoint(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
-            returnObjByClick(clickWorldPos);
+            print("clickPos" + clickWorldPos);
+            for (int i = 0; i < creaturesOnBoard.Length; i++)
+            {
+                if (creaturesOnBoard[i] is Box)
+                {
+                    ReturnObjByClick(i, clickWorldPos);
+                }
+                else if (creaturesOnBoard[i] is Creature)
+                {
+                    CreatureFunc(i, clickWorldPos);
+                }
+
+            }
         }        
     }
-
-    Vector2 randomPosition()
-    {
-        return new Vector2(Random.Range(-8, 8), Random.Range(-14, 6));
-    }
-
     GameObject creatureByLevel(int level)
     {
-
         switch (level)
-        { case 1:  return first;
+        {
+            case 1:  return first;
             case 2: return second;
             case 3: return third;
             case 4: return fourth;
             default: return fifth;
         }
     }
-
-    bool returnObjByClick(Vector2 clickPosition)
+    bool CreatureFunc(int i, Vector2 clickPos)
     {
-        for(int i = 0; i < creaturesOnBoard.Length; i++) {
-            for (int j = 0; j < creaturesOnBoard.Length; j++)
+        Creature creature = creaturesOnBoard[i] as Creature;
+        if (creature.findObjOnBoard(clickPos))
+        {
+            mergeLst.Add(i);
+        }
+        if (mergeLst.Count == 2 )
+        {
+            if ((creaturesOnBoard[mergeLst[0]] as Creature).level ==
+                (creaturesOnBoard[mergeLst[1]] as Creature).level)
             {
-                if (creaturesOnBoard[i,j] is Box)
-                {
-                    if ((creaturesOnBoard[i, j] as Box).position == clickPosition)
-                    {
-                        creaturesOnBoard[i, j]=(creaturesOnBoard[i, j] as Box).openBox();
-                        return true;
-                    }
-                }
+                Creature creature1 = creaturesOnBoard[mergeLst[0]] as Creature;
+                Creature creature2 = creaturesOnBoard[mergeLst[1]] as Creature;
+                creaturesOnBoard[mergeLst[0]] =
+                    new Creature(creature1.level + 1, creature2.position, creatureByLevel(creature1.level+1));
+                creaturesOnBoard[mergeLst[1]] = null;
+                Destroy(creature1.obj);
+                Destroy(creature2.obj);
             }
-            
+            mergeLst.Clear();
+            return true;
         }
         return false;
     }
-
+    bool ReturnObjByClick(int i,Vector2 clickPosition)
+    {
+        Box box = creaturesOnBoard[i] as Box;
+        if (box.findObjOnBoard(clickPosition))
+        {
+            print("well done");
+            creaturesOnBoard[i] = box.openBox() as Creature;
+            Destroy(box.obj);
+            return true;
+        }
+        return false;
+    }
+    bool Merging(int i, Vector2 clickPosition)
+    {        
+        return false;
+    }
+    Vector2 RandomPosition()
+    {
+        return new Vector2(Random.Range(-8, 8), Random.Range(-14, 6));
+    }
+    IEnumerator Deliver()
+    {
+        while (true)
+        {
+            for (int i = 0; i < creaturesOnBoard.Length; i++)
+            {
+                int randomLevel = Random.Range(1, boxLevel);
+                if (!(creaturesOnBoard[i] is Box || creaturesOnBoard[i] is Creature))
+                {
+                    creaturesOnBoard[i] = new Box(randomLevel, creatureByLevel(randomLevel), box, RandomPosition());
+                }
+                else print("full mass");
+                yield return new WaitForSeconds(2);
+            }
+        }
+    }
 }
