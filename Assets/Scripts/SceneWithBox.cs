@@ -13,6 +13,7 @@ public class SceneWithBox : MonoBehaviour {
     private bool check;
 
     public static Object[] creaturesOnBoard = new Object[5];
+    
     public static List<int> mergeLst = new List<int>();
     int boxLevel;
     private IEnumerator boxDeliver;
@@ -46,6 +47,8 @@ public class SceneWithBox : MonoBehaviour {
             }
         }        
     }
+
+
     GameObject creatureByLevel(int level)
     {
         switch (level)
@@ -62,7 +65,7 @@ public class SceneWithBox : MonoBehaviour {
         Creature creature = creaturesOnBoard[i] as Creature;
         if (creature.findObjOnBoard(clickPos))
         {
-            mergeLst.Add(i);
+           if(mergeLst.Count==0||mergeLst[0]!=i) mergeLst.Add(i);
         }
         if (mergeLst.Count == 2 )
         {
@@ -100,8 +103,25 @@ public class SceneWithBox : MonoBehaviour {
     }
     Vector2 RandomPosition()
     {
-        return new Vector2(Random.Range(-8, 8), Random.Range(-14, 6));
+        
+        while (true)
+        {
+            Vector2 currposition = new Vector2(Random.Range(-8, 8), Random.Range(-14, 6));
+            foreach(Object element in creaturesOnBoard)
+            {
+                if(element is Box)
+                {
+                    if ((element as Box).findObjOnBoard( currposition)) break;
+                }
+                if (element is Creature)
+                {
+                    if ((element as Creature).findObjOnBoard(currposition)) break;
+                }
+                return currposition;
+            }
+        }
     }
+
     IEnumerator Deliver()
     {
         while (true)
