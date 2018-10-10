@@ -10,9 +10,10 @@ public class SceneWithBox : MonoBehaviour {
     public GameObject third;
     public GameObject fourth;
     public GameObject fifth;
+    public GameObject empty;
     private bool check;
 
-    public static Object[] creaturesOnBoard = new Object[5];
+    public static Object[] creaturesOnBoard = new Object[20];
     
     public static List<int> mergeLst = new List<int>();
     int boxLevel;
@@ -106,19 +107,22 @@ public class SceneWithBox : MonoBehaviour {
         
         while (true)
         {
-            Vector2 currposition = new Vector2(Random.Range(-8, 8), Random.Range(-14, 6));
+            bool has = false;
+            Vector2 currposition = new Vector2(empty.transform.position.x + Random.Range(0, 5) * 4,
+                                               empty.transform.position.y - Random.Range(0, 5) * 4);
             foreach(Object element in creaturesOnBoard)
             {
                 if(element is Box)
                 {
-                    if ((element as Box).findObjOnBoard( currposition)) break;
+                    if ((element as Box).position == currposition) { has= true; break; }
                 }
                 if (element is Creature)
                 {
-                    if ((element as Creature).findObjOnBoard(currposition)) break;
+                    if ((element as Creature).position==currposition) { has = true; break; }
                 }
-                return currposition;
+                
             }
+            if(has==false) return currposition;
         }
     }
 
@@ -128,14 +132,16 @@ public class SceneWithBox : MonoBehaviour {
         {
             for (int i = 0; i < creaturesOnBoard.Length; i++)
             {
-                int randomLevel = Random.Range(1, boxLevel);
+                int randomLevel = Random.Range(1, boxLevel);//проблема. в цикле создается до 25 . то есть если дошло до 25, но ячейки заполнені не все, фиаско
                 if (!(creaturesOnBoard[i] is Box || creaturesOnBoard[i] is Creature))
                 {
                     creaturesOnBoard[i] = new Box(randomLevel, creatureByLevel(randomLevel), box, RandomPosition());
+                    break;
                 }
                 else print("full mass");
-                yield return new WaitForSeconds(2);
+                
             }
+            yield return new WaitForSeconds(1);
         }
     }
 }

@@ -25,7 +25,7 @@ public class Box : MonoBehaviour
     {
         Vector2 v2= new Vector2(position.x - clickPos.x, position.y - clickPos.y);
 
-        if (Mathf.Abs(v2.x) < 2 && Mathf.Abs(v2.y) < 2)
+        if (Mathf.Abs(v2.x) <= 2 && Mathf.Abs(v2.y) <= 2)
         {
             return true;
         }
