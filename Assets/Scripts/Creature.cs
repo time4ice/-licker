@@ -7,7 +7,7 @@ public class Creature : MonoBehaviour
 {
 
     public  int level;
-    private double coinsPerSec;
+    public float coinsPerSec;
     public Vector2 position;
     public GameObject obj;
     public Creature(int level, Vector2 position, GameObject creature)
@@ -18,7 +18,7 @@ public class Creature : MonoBehaviour
         coinsPerSec = fixCoins();
     }
 
-    double fixCoins()
+    float fixCoins()
     {
         return Mathf.Pow(2, level) * (1 + (level - 1) / 10);
     }
@@ -33,4 +33,5 @@ public class Creature : MonoBehaviour
         }
         return false;
     }
+
 }
