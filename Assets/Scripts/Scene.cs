@@ -29,12 +29,15 @@ public class Scene : MonoBehaviour
     void Start()
     {
         money = 0;
-        GetCreatures();
-        moneyMaker = Maker();
-        check = true;
-        StartCoroutine(moneyMaker);
+        
     }
 
+    void Awake()
+    {
+        GetCreatures();
+        moneyMaker = Maker();
+        StartCoroutine(moneyMaker);
+    }
 
     void Update()
     {
@@ -61,11 +64,11 @@ public class Scene : MonoBehaviour
 
     void writeInfo()
     {
-        PlayerPrefs.SetInt((5*scenelevel+1).ToString(), findCreaturesAmount(1));
-        PlayerPrefs.SetInt((5 * scenelevel + 2).ToString(), findCreaturesAmount(2));
-        PlayerPrefs.SetInt((5 * scenelevel + 3).ToString(), findCreaturesAmount(3));
-        PlayerPrefs.SetInt((5 * scenelevel + 4).ToString(), findCreaturesAmount(4));
-        PlayerPrefs.SetInt((5 * scenelevel + 5).ToString(), findCreaturesAmount(5));
+        PlayerPrefs.SetInt((5*scenelevel+1).ToString(), findCreaturesAmount(5 * scenelevel + 1));
+        PlayerPrefs.SetInt((5 * scenelevel + 2).ToString(), findCreaturesAmount(5 * scenelevel + 2));
+        PlayerPrefs.SetInt((5 * scenelevel + 3).ToString(), findCreaturesAmount(5 * scenelevel +3));
+        PlayerPrefs.SetInt((5 * scenelevel + 4).ToString(), findCreaturesAmount(5 * scenelevel + 4));
+        PlayerPrefs.SetInt((5 * scenelevel + 5).ToString(), findCreaturesAmount(5 * scenelevel + 5));
         PlayerPrefs.SetFloat("money", money);
     }
 
@@ -87,7 +90,7 @@ public class Scene : MonoBehaviour
     {
 
 
-        if (!PlayerPrefs.HasKey("0")) return;
+        if (!PlayerPrefs.HasKey("6")) return;
         int j = 0;
         money = PlayerPrefs.GetFloat("money");
         for (int k = 1; k <= 5; k++)
@@ -127,10 +130,11 @@ public class Scene : MonoBehaviour
             {
                 Creature creature1 = creaturesOnBoard[mergeLst[0]] as Creature;
                 Creature creature2 = creaturesOnBoard[mergeLst[1]] as Creature;
-                if (creature1.level == 5)
+                if (creature1.level == 5*scenelevel+5)
                 {
                     if (!PlayerPrefs.HasKey((5 * (scenelevel+1) + 1).ToString())) PlayerPrefs.SetInt((5 * (scenelevel + 1) + 1).ToString(), 1);
                     else PlayerPrefs.SetInt((5 * (scenelevel + 1) + 1).ToString(), PlayerPrefs.GetInt((5 * (scenelevel + 1) + 1).ToString()) + 1);
+                    creaturesOnBoard[mergeLst[0]] = null;
                 }
                 else
                 {
@@ -177,6 +181,13 @@ public class Scene : MonoBehaviour
         {
             foreach (Object obj in creaturesOnBoard)
                 if (obj is Creature) money += (obj as Creature).coinsPerSec;
+            int i = 0;
+            while(PlayerPrefs.HasKey(i.ToString()))
+            {
+                if (i!=scenelevel*5+1&& i != scenelevel * 5 + 2 && i != scenelevel * 5 + 3 && i != scenelevel * 5 + 4&& i != scenelevel * 5 + 5)
+                    money += PlayerPrefs.GetInt(i.ToString())*Creature.fixCoins(i);
+                i++;
+            }
             coinstext.GetComponent<Text>().text = money.ToString();
             yield return new WaitForSeconds(1);
         }

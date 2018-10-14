@@ -29,18 +29,24 @@ public class SceneWithBox : MonoBehaviour {
 
     void Start()
     {
-        print("hello");
+        
         money = 0;
-        GetCreatures();
         boxLevel = 1;
+        
+       
+        
+    }
+
+    void Awake()
+    {
+        GetCreatures();
         boxDeliver = Deliver();
         moneyMaker = Maker();
-        check = true;
         StartCoroutine(boxDeliver);
         StartCoroutine(moneyMaker);
-    }        
-	
-	void Update ()
+    }
+
+    void Update ()
     {
         if (Input.GetMouseButtonDown(0))
         {
@@ -174,6 +180,7 @@ public class SceneWithBox : MonoBehaviour {
                 {
                     if (!PlayerPrefs.HasKey("6")) PlayerPrefs.SetInt("6", 1);
                     else PlayerPrefs.SetInt("6", PlayerPrefs.GetInt("6") + 1);
+                    creaturesOnBoard[mergeLst[0]] = null;
                 }
                 else
                 {
@@ -253,6 +260,12 @@ public class SceneWithBox : MonoBehaviour {
         {
             foreach (Object obj in creaturesOnBoard)
                 if (obj is Creature) money += (obj as Creature).coinsPerSec;
+            int i = 6;
+            while (PlayerPrefs.HasKey(i.ToString()))
+            {
+                money += PlayerPrefs.GetInt(i.ToString()) * Creature.fixCoins(i);
+                i++;
+            }
             coinstext.GetComponent<Text>().text = money.ToString();
             yield return new WaitForSeconds(1);
         }
@@ -261,8 +274,8 @@ public class SceneWithBox : MonoBehaviour {
 
    public void gotoscene (string scenename)
     {
-        print("here");
+       
         writeInfo();
-        SceneManager.LoadScene("second");
+        SceneManager.LoadScene(scenename);
     }
 }

@@ -15,10 +15,10 @@ public class Creature : MonoBehaviour
         this.level = level;
         this.position = position;
         obj = Instantiate(creature, this.position, Quaternion.identity) as GameObject;
-        coinsPerSec = fixCoins();
+        coinsPerSec = fixCoins(this.level);
     }
 
-    float fixCoins()
+    public static float fixCoins(int level)
     {
         return Mathf.Pow(2, level) * (1 + (level - 1) / 10);
     }
